@@ -24,12 +24,24 @@ export async function signIn(prevState: FormState, formData: FormData): Promise<
   try {
     const supabase = createServerSupabaseClient();
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    console.log("Attempting login for:", email);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
-      console.error("Supabase auth error:", error);
-      return { error: "Identifiants invalides" };
+      console.error("Supabase auth error:", {
+        message: error.message,
+        status: error.status,
+        name: error.name
+      });
+      return { error: `Erreur: ${error.message}` };
     }
+
+    if (!data.user) {
+      console.error("Login succeeded but no user returned");
+      return { error: "Aucun utilisateur trouvé" };
+    }
+
+    console.log("Login successful for user:", data.user.id);
 
     // Revalidate auth state
     revalidatePath("/", "layout");
