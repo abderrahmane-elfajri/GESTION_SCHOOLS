@@ -1,9 +1,11 @@
 "use client";
 
 import { useFormState, useFormStatus } from "react-dom";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { signIn } from "./actions";
 
-const initialState = { error: undefined as string | undefined };
+const initialState = { error: undefined as string | undefined, success: false };
 
 interface LoginFormProps {
   redirectTo?: string;
@@ -12,6 +14,13 @@ interface LoginFormProps {
 export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   const [state, formAction] = useFormState(signIn, initialState);
   const { pending } = useFormStatus();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success && state?.redirectTo) {
+      router.push(state.redirectTo);
+    }
+  }, [state?.success, state?.redirectTo, router]);
 
   return (
     <form action={formAction} className="mx-auto flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
