@@ -20,17 +20,24 @@ export async function signIn(prevState: FormState, formData: FormData): Promise<
   }
 
   const { email, password } = parseResult.data;
-  const supabase = createServerSupabaseClient();
-
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-  if (error) {
-    return { error: "Identifiants invalides" };
-  }
-
-  // Revalidate auth state
-  revalidatePath("/", "layout");
   
-  const redirectTo = formData.get("redirect")?.toString() ?? "/dashboard";
-  return { success: true, redirectTo };
+  try {
+    const supabase = createServerSupabaseClient();
+
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error("Supabase auth error:", error);
+      return { error: "Identifiants invalides" };
+    }
+
+    // Revalidate auth state
+    revalidatePath("/", "layout");
+    
+    const redirectTo = formData.get("redirect")?.toString() ?? "/dashboard";
+    return { success: true, redirectTo };
+  } catch (err) {
+    console.error("Login error:", err);
+    return { error: "Erreur de connexion. Veuillez réessayer." };
+  }
 }

@@ -11,9 +11,22 @@ interface LoginFormProps {
   redirectTo?: string;
 }
 
+function SubmitButton() {
+  const { pending } = useFormStatus();
+  
+  return (
+    <button
+      type="submit"
+      className="rounded-md bg-primaire-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-primaire-700 disabled:opacity-60"
+      disabled={pending}
+    >
+      {pending ? "Connexion..." : "Se connecter"}
+    </button>
+  );
+}
+
 export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   const [state, formAction] = useFormState(signIn, initialState);
-  const { pending } = useFormStatus();
   const router = useRouter();
 
   useEffect(() => {
@@ -53,13 +66,7 @@ export const LoginForm = ({ redirectTo }: LoginFormProps) => {
 
       {state && 'error' in state && state.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
 
-      <button
-        type="submit"
-        className="rounded-md bg-primaire-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-primaire-700 disabled:opacity-60"
-        disabled={pending}
-      >
-        {pending ? "Connexion..." : "Se connecter"}
-      </button>
+      <SubmitButton />
     </form>
   );
 };
