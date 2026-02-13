@@ -1,6 +1,7 @@
 "use server";
 
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import type { Database } from "@/lib/database.types";
 
 type FormState = 
   | { error: string; success?: undefined }
@@ -39,14 +40,16 @@ export async function signUp(prevState: FormState, formData: FormData): Promise<
       return { error: "Échec de création de l'utilisateur" };
     }
 
-    // Create profile
+    // Create profile with proper typing
+    const profileData: Database["public"]["Tables"]["profiles"]["Insert"] = {
+      id: authData.user.id,
+      role: "admin",
+      school_id: null
+    };
+
     const { error: profileError } = await supabase
       .from("profiles")
-      .insert({
-        id: authData.user.id,
-        role: "admin" as const,
-        school_id: null
-      });
+      .insert(profileData);
 
     if (profileError) {
       console.error("Profile creation error:", profileError);
