@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { signIn } from "./actions";
 
-const initialState = { error: undefined as string | undefined, success: false, redirectTo: undefined as string | undefined };
+const initialState = { error: "" } as const;
 
 interface LoginFormProps {
   redirectTo?: string;
@@ -17,10 +17,10 @@ export const LoginForm = ({ redirectTo }: LoginFormProps) => {
   const router = useRouter();
 
   useEffect(() => {
-    if (state?.success && state?.redirectTo) {
+    if (state && 'success' in state && state.success && state.redirectTo) {
       router.push(state.redirectTo);
     }
-  }, [state?.success, state?.redirectTo, router]);
+  }, [state, router]);
 
   return (
     <form action={formAction} className="mx-auto flex w-full max-w-sm flex-col gap-4 rounded-lg bg-white p-8 shadow-sm">
@@ -51,7 +51,7 @@ export const LoginForm = ({ redirectTo }: LoginFormProps) => {
 
       {redirectTo ? <input type="hidden" name="redirect" value={redirectTo} /> : null}
 
-      {state?.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
+      {state && 'error' in state && state.error ? <p className="text-sm text-red-600">{state.error}</p> : null}
 
       <button
         type="submit"

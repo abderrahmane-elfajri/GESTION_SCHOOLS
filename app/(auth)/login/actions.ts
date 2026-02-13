@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { loginSchema } from "@/lib/schemas/auth";
 
-export async function signIn(prevState: { error?: string; success?: boolean; redirectTo?: string } | undefined, formData: FormData) {
+type FormState = 
+  | { error: string; success?: undefined; redirectTo?: undefined }
+  | { success: true; redirectTo: string; error?: undefined };
+
+export async function signIn(prevState: FormState, formData: FormData): Promise<FormState> {
   const parseResult = loginSchema.safeParse({
     email: formData.get("email"),
     password: formData.get("password")
