@@ -44,9 +44,8 @@ export async function signUp(prevState: FormState, formData: FormData): Promise<
       .from("profiles")
       .insert({
         id: authData.user.id,
-        role: "admin",
-        school_id: null,
-        created_at: new Date().toISOString()
+        role: "admin" as const,
+        school_id: null
       });
 
     if (profileError) {
