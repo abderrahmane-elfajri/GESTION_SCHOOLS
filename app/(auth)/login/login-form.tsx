@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { signIn } from "./actions";
 
-const initialState = { error: undefined as string | undefined, success: false };
+const initialState = { error: undefined as string | undefined, success: false, redirectTo: undefined as string | undefined };
 
 interface LoginFormProps {
   redirectTo?: string;
