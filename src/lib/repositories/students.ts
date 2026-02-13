@@ -61,7 +61,8 @@ export const fetchStudents = async (
   }
 
   // Fetch all unique schools in one query
-  const uniqueSchoolIds = [...new Set((data ?? []).map(s => s.school_id).filter(Boolean))];
+  const studentData = (data ?? []) as Array<Tables<"students">>;
+  const uniqueSchoolIds = [...new Set(studentData.map(s => s.school_id).filter(Boolean))];
   let schoolsMap: Record<string, { id: string; name: string; code: string; director: string | null; address: string | null; phone: string | null; authorization: string | null }> = {};
   
   if (uniqueSchoolIds.length > 0) {
@@ -70,16 +71,17 @@ export const fetchStudents = async (
       .select("id, name, code, director, address, phone, authorization")
       .in("id", uniqueSchoolIds);
     
+    type SchoolData = { id: string; name: string; code: string; director: string | null; address: string | null; phone: string | null; authorization: string | null };
     if (!schoolsError && schools) {
-      schoolsMap = schools.reduce((acc, school) => {
+      schoolsMap = (schools as SchoolData[]).reduce((acc, school) => {
         acc[school.id] = school;
         return acc;
-      }, {} as Record<string, { id: string; name: string; code: string; director: string | null; address: string | null; phone: string | null; authorization: string | null }>);
+      }, {} as Record<string, SchoolData>);
     }
   }
 
   // Map students with schools
-  const studentsWithSchools = (data ?? []).map((student) => ({
+  const studentsWithSchools = studentData.map((student) => ({
     ...student,
     schools: student.school_id && schoolsMap[student.school_id]
       ? schoolsMap[student.school_id]

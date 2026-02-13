@@ -26,7 +26,7 @@ export const fetchDashboardStats = async (
     .from("profiles")
     .select("role, school_id")
     .eq("id", session.user.id)
-    .single();
+    .single() as { data: { role: string; school_id: string | null } | null };
 
   // Build queries based on role
   let studentsQuery = supabase.from("students").select("id", { count: "exact", head: true });
