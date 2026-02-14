@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { ReactNode } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { fetchCurrentProfile } from "@/lib/auth";
-import { signOut } from "./logout-action";
+import { LogoutButton } from "./logout-button";
 
 const NAV_LINKS = [
   { href: "/dashboard", label: "Tableau de bord" },
@@ -63,11 +63,7 @@ export default async function DashboardLayout({ children }: { children: ReactNod
                 ) : null}
               </div>
             </div>
-            <form action={signOut}>
-              <button type="submit" className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50">
-                Déconnexion
-              </button>
-            </form>
+            <LogoutButton />
           </div>
         </div>
       </header>
