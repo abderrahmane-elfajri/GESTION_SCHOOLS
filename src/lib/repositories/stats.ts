@@ -12,9 +12,12 @@ export const fetchDashboardStats = async (
   const supabase = client ?? createServerSupabaseClient();
 
   // Get user's profile to check role and school access
-  const { data: { session } } = await supabase.auth.getSession();
+  const [{ data: { session } }, { data: profile }] = await Promise.all([
+    supabase.auth.getSession(),
+    supabase.from("profiles").select("role, school_id").limit(1).maybeSingle()
+  ]);
   
-  if (!session?.user) {
+  if (!session?.user || !profile) {
     return {
       students: 0,
       unpaidPayments: 0,
@@ -22,11 +25,7 @@ export const fetchDashboardStats = async (
     };
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("role, school_id")
-    .eq("id", session.user.id)
-    .single() as { data: { role: string; school_id: string | null } | null };
+  const profileData = profile as { role: string; school_id: string | null };
 
   // Build queries based on role
   let studentsQuery = supabase.from("students").select("id", { count: "exact", head: true });
@@ -34,8 +33,8 @@ export const fetchDashboardStats = async (
   let certificatesQuery = supabase.from("certificates").select("id", { count: "exact", head: true });
 
   // If secretary, filter by their school
-  if (profile?.role === "secretary" && profile.school_id) {
-    studentsQuery = studentsQuery.eq("school_id", profile.school_id);
+  if (profileData.role === "secretary" && profileData.school_id) {
+    studentsQuery = studentsQuery.eq("school_id", profileData.school_id);
     // Payments and certificates are linked to students, so they'll follow the same RLS
   }
 

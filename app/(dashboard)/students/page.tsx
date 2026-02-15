@@ -7,8 +7,8 @@ import { fetchStudents } from "@/lib/repositories/students";
 import { StudentsFilters } from "@/components/students/students-filters";
 import { StudentsTable } from "@/components/students/students-table";
 
-export const revalidate = 60; // Cache for 1 minute
-export const dynamic = 'force-dynamic';
+export const revalidate = 30; // Cache for 30 seconds
+export const fetchCache = 'default-cache';
 
 const PROGRAM_OPTIONS = [
   { value: "coiffure", label: "Coiffure" },
