@@ -7,8 +7,8 @@ import { fetchDashboardStats } from "@/lib/repositories/stats";
 import { fetchStudents } from "@/lib/repositories/students";
 import { LoadingSkeleton } from "@/components/ui/loading-skeleton";
 
-export const revalidate = 180; // Cache for 3 minutes
-export const dynamic = 'force-static';
+export const revalidate = 300; // Cache for 5 minutes
+export const fetchCache = 'force-cache';
 
 async function DashboardStats() {
   try {
