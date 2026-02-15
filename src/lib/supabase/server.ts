@@ -11,16 +11,27 @@ const buildCookieAdapter = () => {
     get(name: string) {
       return cookieStore.get(name)?.value;
     },
-    set(name: string, value: string, options: { path?: string; maxAge?: number }) {
+    set(name: string, value: string, options: any) {
       try {
-        cookieStore.set({ name, value, ...options });
+        cookieStore.set({
+          name,
+          value,
+          ...options,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production'
+        });
       } catch (error) {
         /* ignore when in a read-only context */
       }
     },
-    remove(name: string, options: { path?: string }) {
+    remove(name: string, options: any) {
       try {
-        cookieStore.set({ name, value: "", ...options });
+        cookieStore.set({
+          name,
+          value: "",
+          ...options,
+          maxAge: 0
+        });
       } catch (error) {
         /* ignore when in a read-only context */
       }

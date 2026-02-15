@@ -25,17 +25,40 @@ export async function middleware(req: NextRequest) {
         return req.cookies.get(name)?.value;
       },
       set(name: string, value: string, options: any) {
-        response.cookies.set({
+        req.cookies.set({
           name,
           value,
           ...options,
         });
+        response = NextResponse.next({
+          request: {
+            headers: req.headers,
+          },
+        });
+        response.cookies.set({
+          name,
+          value,
+          ...options,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production'
+        });
       },
       remove(name: string, options: any) {
+        req.cookies.set({
+          name,
+          value: "",
+          ...options,
+        });
+        response = NextResponse.next({
+          request: {
+            headers: req.headers,
+          },
+        });
         response.cookies.set({
           name,
           value: "",
           ...options,
+          maxAge: 0
         });
       },
     },
